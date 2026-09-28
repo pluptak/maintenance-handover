@@ -8,7 +8,7 @@ This repo holds **releases only**. The source is not public.
 
 ## What it does
 
-- **Artifacts in:** your notes, plus PDFs, DOCX files, URLs and pasted text about the project.
+- **Artifacts in:** your notes, plus PDFs, DOCX files and pasted text about the project.
 - **Grounded chat:** a streamed assistant pane that answers from your material and cites every
   source, dated, so conflicting notes resolve by recency.
 - **Memory map:** each artifact is classified into a typed map of the system (environments,
@@ -24,7 +24,7 @@ and the only network calls go to the model server you configure.
 ## Requirements
 
 - **Obsidian desktop** (Windows, macOS, Linux), 1.5.0 or later. Mobile is not supported.
-- **A local model server** with an OpenAI-compatible API, e.g. [LM Studio](https://lmstudio.ai)
+- **A local model server** with an OpenAI-compatible API, e.g. [llama.CPP](https://llama.app/), [LM Studio](https://lmstudio.ai)
   or [Ollama](https://ollama.com), serving:
   - a **chat model** (an instruction-tuned model; larger models classify noticeably better), and
   - an **embedding model** (e.g. `nomic-embed-text`).
@@ -40,7 +40,7 @@ and the only network calls go to the model server you configure.
 2. Run *BRAT: Add a beta plugin for testing* and enter:
 
    ```
-   pluptak/maintenance-handover
+   https://github.com/pluptak/maintenance-handover
    ```
 
 3. Enable **Knowledge Base** under *Settings → Community plugins*.
@@ -72,11 +72,31 @@ that folder are kept.
    the first thing to include in a bug report.
 4. **Try it:**
    - open the assistant from the ribbon and ask about your project;
-   - add a PDF, DOCX or URL with the *Capture:* commands;
+   - add a note, PDF or DOCX with the *Capture:* commands;
    - run *Memory map: Build*, then *Report: Handover (from memory map)*.
 
 > Changed the embedding model? Run *Index: Rebuild (re-embed everything)*. Without it, existing
 > notes keep old vectors and silently drop out of search.
+
+## Secrets and what the model sees
+
+- **Your model server sees your content as written.** Indexing sends every note and source to the
+  embedding model, and *Memory map: Build* sends each whole note or source to the chat model,
+  unredacted. Use a server you trust with everything in the vault. For confidential projects that
+  means a local server, not a hosted API.
+- **What the plugin writes is redacted.** Values that look like secrets are replaced with
+  `[REDACTED]` in the memory map, the handover reports, chat answers and notes saved from chat.
+  That covers `password: …` and `token=…` assignments, passwords stated in a sentence
+  ("the password is now X"), AWS keys, JWTs, bearer tokens, private-key blocks and the password in
+  a `scheme://user:pass@host` address. Chat also masks the retrieved text before the model sees it.
+  What you type into chat is sent as you wrote it.
+- **Redaction is a safety net, not a guarantee.** It's deliberately narrow so it doesn't mangle
+  ordinary text, so a secret with no label and no known shape gets through. Keep credentials in a
+  password manager and write down only where they are, such as a KeePass entry path. The plugin
+  keeps those paths readable on purpose.
+- **Credentials are for a person to fill in.** The report's *Credential References* and
+  *Access Checklist* sections are never written by the model. They're left for the outgoing
+  maintainer.
 
 ## Known limitations
 
