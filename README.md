@@ -1,11 +1,17 @@
 # Maintenance Handover
 
-Test releases of an Obsidian plugin for **maintenance handovers**.
+**Maintenance Handover** is an Obsidian plugin that helps you prepare a software maintenance handover.
 
 Use it when someone who knows a software system is leaving, and the knowledge needed to maintain it
 is scattered across notes, documents, spreadsheets and their own head. It gathers that material,
 extracts an evidence-backed model of the system, shows what is still missing, and produces a
 handover the next maintainer can use.
+
+> **Work in progress.** The plugin is under active development and released for testing. The
+> handover checklist, the classification prompts and the report layout are still being tuned, so
+> output can change between versions. It has so far been evaluated mainly on synthetic, fictional
+> projects rather than on a range of real ones. Feedback from real handovers is the most useful
+> input right now (see *Reporting problems*).
 
 ## How it works
 
@@ -51,6 +57,48 @@ The gaps are computed by code against a fixed checklist, not by the model, so th
 what your material leaves out rather than what the model chose to mention. The outgoing
 developer answers the questions; after their answers are added as notes, rebuilding the map and
 report reflects them.
+
+### Why retrieval, and why a memory map
+
+The plugin uses both, because they answer different questions.
+
+- **Retrieval (RAG)** finds the passages that match a question and has the model answer from
+  them, with citations. It suits specific questions such as "how do we deploy to staging?". It
+  cannot tell you what is *absent*: if nobody wrote down who owns the database, a search returns
+  nothing relevant and there is nothing to notice. It also surfaces conflicting notes side by
+  side without deciding which is current.
+- **A memory map** classifies every document into typed entities (services, environments,
+  people, procedures…) and relations, once, ahead of any question. Because the result has a
+  known structure, code can check it: whether each claim's quote really appears in its source,
+  which names refer to the same thing, which value is newest, and which expected topics have no
+  entity at all. A handover needs exactly that last check, and retrieval alone cannot provide it.
+
+Retrieval stays because it is the fastest way to explore the material, and the map is what the
+handover report and its gaps are built from.
+
+### How coverage and gaps are computed
+
+Coverage is computed by code from the memory map, not judged by the model.
+
+1. **A fixed checklist.** The handover is organised into eight areas: Domain Overview, Permissions
+   and Access, Environments, Development & Operation, Tools, Contacts, SLA Coverage and Long Term
+   Plans. Together they contain 38 scored slots, such as *Environment Addresses*, *Backup &
+   Restore* or *Escalation Path*.
+2. **One rule per slot.** Each slot is covered when the map contains a specific kind of evidence:
+   for example, *Environment Addresses* is covered when an Environment entity carries an address,
+   and *Escalation Path* when an escalation relation exists. A few slots (Purpose, Opportunities &
+   Pain Points) are shown but not scored, and credential sections are always left for a person.
+3. **Coverage is the share of scored slots covered.** Every uncovered slot becomes a gap that
+   states the question to ask, for example "Who has restored production, and how?". Gaps carry
+   a high, medium or low priority, which orders the list but does not change the percentage.
+4. **You can waive a gap.** If a slot does not apply, for instance because the client gives
+   maintainers no access to live systems, you record it as not applicable, with a reason, in a
+   decisions note. "No access" is then an answer rather than a gap.
+
+Because the rules read the map rather than the model's own summary, a missing topic shows up as a
+gap even when the model never mentioned it. The checklist is built for software your team develops
+and the client hosts, so it asks "us or the client?" in several places. Projects with a different
+shape may find some slots irrelevant or missing, and the checklist is expected to evolve.
 
 ### What you do, and what it costs
 
