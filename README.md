@@ -82,7 +82,8 @@ Coverage is computed by code from the memory map, not judged by the model.
 
 1. **A fixed checklist.** The handover is organised into eight areas: Domain Overview, Permissions
    and Access, Environments, Development & Operation, Tools, Contacts, SLA Coverage and Long Term
-   Plans. Together they contain 38 scored slots, such as *Environment Addresses*, *Backup &
+   Plans. Together they currently contain 38 scored slots (the number may change as the checklist
+   evolves and is only informational), such as *Environment Addresses*, *Backup &
    Restore* or *Escalation Path*.
 2. **One rule per slot.** Each slot is covered when the map contains a specific kind of evidence:
    for example, *Environment Addresses* is covered when an Environment entity carries an address,
