@@ -1,26 +1,191 @@
 # Maintenance Handover
 
-Test releases of an Obsidian plugin for **maintenance handovers**. It turns a vault of project notes
-and documents into a local knowledge base, maps what is known about the project, and shows what
-is missing before the new maintainer needs it.
+**Maintenance Handover** is an Obsidian plugin that helps you prepare a software maintenance handover.
 
-This repo holds **releases only**. The source is not public.
+Use it when someone who knows a software system is leaving, and the knowledge needed to maintain it
+is scattered across notes, documents, spreadsheets and their own head. It gathers that material,
+extracts an evidence-backed model of the system, shows what is still missing, and produces a
+handover the next maintainer can use.
+
+> **Work in progress.** The plugin is under active development and released for testing. The
+> handover checklist, the classification prompts and the report layout are still being tuned, so
+> output can change between versions. It has so far been evaluated mainly on synthetic, fictional
+> projects rather than on a range of real ones. Feedback from real handovers is the most useful
+> input right now (see *Reporting problems*).
+
+## How it works
+
+```mermaid
+flowchart LR
+    A["Your material<br/>notes, PDF, DOCX, XLSX,<br/>PPTX, CSV, pasted text"] --> B["Index<br/>searchable, local"]
+    B --> C["Memory map<br/>typed entities, each claim<br/>with source + quote"]
+    C --> D["Coverage and gaps<br/>scored by code against<br/>a handover checklist"]
+    D --> E["Handover report<br/>every statement linked<br/>to its evidence"]
+    D -. "gap questions" .-> F(["Outgoing developer"])
+    F -. "answers, new notes" .-> A
+    B --> G["Grounded chat"]
+    C --> G
+```
+
+**Chat is a supporting interface, not the core of the product.** It lets you explore the
+collected material and ask questions of it. The handover itself comes from the memory map and the
+coverage analysis, which structure the material into a model of the system and identify what is
+still unknown. A search or chat interface over a vault does not do either.
+
+### An example
+
+```
+Your vault contains:                       Memory map (linked notes, every claim
+  deployment-notes.md                      cites its source and a verbatim quote):
+  architecture.pdf
+  incident-2025-03.docx                      Services      API · PostgreSQL · Import worker
+  customer-import.xlsx                       Environments  production · staging
+  runbook.md                                 People        Alice (database owner) · Bob (deploys)
+                                             Procedures    deploy API · restore database
+                     ↓
+              Coverage against the handover checklist     Handover report
+                                                          (built from the map, each statement
+  ✓ Architecture                                           linked to its evidence, with the gaps
+  ✓ Deployment                                             listed as questions to answer)
+  ✓ Production environment
+  ✗ Database recovery procedure    → "Who has restored production, and how?"
+  ✗ Third-party credentials        → "Where are they kept?"
+  ✗ Incident escalation            → "Who is called first, and when?"
+```
+
+The gaps are computed by code against a fixed checklist, not by the model, so the report shows
+what your material leaves out rather than what the model chose to mention. The outgoing
+developer answers the questions; after their answers are added as notes, rebuilding the map and
+report reflects them.
+
+### Why retrieval, and why a memory map
+
+The plugin uses both, because they answer different questions.
+
+- **Retrieval (RAG)** finds the passages that match a question and has the model answer from
+  them, with citations. It suits specific questions such as "how do we deploy to staging?". It
+  cannot tell you what is *absent*: if nobody wrote down who owns the database, a search returns
+  nothing relevant and there is nothing to notice. It also surfaces conflicting notes side by
+  side without deciding which is current.
+- **A memory map** classifies every document into typed entities (services, environments,
+  people, procedures…) and relations, once, ahead of any question. Because the result has a
+  known structure, code can check it: whether each claim's quote really appears in its source,
+  which names refer to the same thing, which value is newest, and which expected topics have no
+  entity at all. A handover needs exactly that last check, and retrieval alone cannot provide it.
+
+Retrieval stays because it is the fastest way to explore the material, and the map is what the
+handover report and its gaps are built from.
+
+### How coverage and gaps are computed
+
+Coverage is computed by code from the memory map, not judged by the model.
+
+1. **A fixed checklist.** The handover is organised into eight areas: Domain Overview, Permissions
+   and Access, Environments, Development & Operation, Tools, Contacts, SLA Coverage and Long Term
+   Plans. Together they currently contain 38 scored slots (the number may change as the checklist
+   evolves and is only informational), such as *Environment Addresses*, *Backup &
+   Restore* or *Escalation Path*.
+2. **One rule per slot.** Each slot is covered when the map contains a specific kind of evidence:
+   for example, *Environment Addresses* is covered when an Environment entity carries an address,
+   and *Escalation Path* when an escalation relation exists. A few slots (Purpose, Opportunities &
+   Pain Points) are shown but not scored, and credential sections are always left for a person.
+3. **Coverage is the share of scored slots covered.** Every uncovered slot becomes a gap that
+   states the question to ask, for example "Who has restored production, and how?". Gaps carry
+   a high, medium or low priority, which orders the list but does not change the percentage.
+4. **You can waive a gap.** If a slot does not apply, for instance because the client gives
+   maintainers no access to live systems, you record it as not applicable, with a reason, in a
+   decisions note. "No access" is then an answer rather than a gap.
+
+Because the rules read the map rather than the model's own summary, a missing topic shows up as a
+gap even when the model never mentioned it. The checklist is built for software your team develops
+and the client hosts, so it asks "us or the client?" in several places. Projects with a different
+shape may find some slots irrelevant or missing, and the checklist is expected to evolve.
+
+### What you do, and what it costs
+
+- **Your part:** collect the project material in one vault (one vault per project), run the
+  build steps, and have the outgoing developer answer the gap questions in notes. The plugin
+  does not discover knowledge that nobody has written down. It shows where that knowledge is
+  missing.
+- **Time:** indexing embeds every note once, and the first *Memory map: Build* makes one model
+  call per note or document. On a local model this can take from minutes to much longer for a
+  large vault, depending on the model and hardware. Builds are checkpointed, so an interrupted
+  or failed build resumes where it stopped, and only new or edited material is processed on
+  later runs.
+- **Cost:** with a local model server there is no usage cost. With a hosted API, every note and
+  document is sent to it (see *Secrets and what the model sees*), so cost scales with the size of
+  the vault.
+
+<details>
+<summary><b>What happens inside the plugin</b> (indexing, map building, chat)</summary>
+
+Everything below runs inside Obsidian against one embedded SQLite file. There is no server and no
+second process. The only outside calls are to your chat and embedding endpoints.
+
+**1. Indexing.** Notes and imported documents become searchable chunks.
+
+```mermaid
+flowchart LR
+    N["Note saved in vault"] --> C["Split into chunks<br/>(title added to each)"]
+    S["Imported document<br/>PDF, DOCX, XLSX, PPTX, CSV"] --> T["Extract text"] --> C
+    C --> E["Embedding model<br/>(your server)"]
+    E --> DB[("SQLite<br/>text + vectors")]
+```
+
+Unchanged notes are never re-embedded. Imported documents live only in the database; the original
+file is not copied into your vault.
+
+**2. Building the memory map.** The model reads; code decides.
+
+```mermaid
+flowchart TD
+    A["Each note or document"] --> M["Chat model, one call per artifact<br/>proposes entities, relations, quotes"]
+    M --> K[("Checkpoint<br/>a failed build resumes")]
+    K --> V{"Code checks"}
+    V -->|"quote not found in source"| X["Rejected"]
+    V -->|"quote verified"| I["Merge duplicate names,<br/>pick newest value,<br/>flag conflicts"]
+    I --> MAP[("Memory map")]
+    MAP --> G["Coverage and gaps<br/>vs. handover checklist"]
+    MAP --> N["Linked notes in your vault"]
+    G --> R["Handover report<br/>no model call"]
+```
+
+Only the first step uses a model. Verification, merging, conflicts, coverage and the report are
+plain code, so the report shows what your material leaves out, not what the model chose to mention,
+and re-running them costs no model calls.
+
+**3. Answering in chat.**
+
+```mermaid
+flowchart TD
+    Q["Your question"] --> P["Plan: rewrite as standalone<br/>search queries"]
+    P --> H["Hybrid search<br/>meaning (vectors) + exact words,<br/>glossary terms expanded"]
+    P --> W["Memory-map lookup<br/>entities named in the question,<br/>plus their neighbours"]
+    H --> X["Context, newest first,<br/>secrets masked"]
+    W --> X
+    X --> L["Chat model<br/>answers only from context"]
+    L --> Y["Streamed answer<br/>with dated [n] citations"]
+```
+
+</details>
 
 ## What it does
 
 - **Artifacts in:** your notes, plus PDF, Word (DOCX), Excel (XLSX), PowerPoint (PPTX), CSV and
   text files, and pasted text about the project.
-- **Grounded chat:** a streamed assistant pane that answers from your material and cites every
-  source, dated, so conflicting notes resolve by recency.
 - **Memory map:** each artifact is classified into a typed map of the system (environments,
   services, people, procedures…). Every claim keeps its source and a verbatim quote, and the
   map is rendered as linked notes in your vault.
 - **Coverage and gaps:** the map is scored against a handover checklist by code. Each missing area
   becomes a gap with a question for the outgoing developer.
 - **Handover report:** a report built from the map, with each statement linked to its evidence.
+- **Grounded chat:** a streamed assistant pane that answers from your material and cites every
+  source, dated, so conflicting notes resolve by recency.
 
-**Everything stays on your machine.** The plugin's database lives in the vault's plugin folder,
-and the only network calls go to the model server you configure.
+**Your project data stays within the systems you configure.** The plugin has no cloud backend. Its
+database lives in the vault's plugin folder, and the only network calls go to the
+OpenAI-compatible chat and embedding endpoints you set up. Those endpoints receive your content,
+so use a local server for confidential material (see *Secrets and what the model sees*).
 
 ## Requirements
 
