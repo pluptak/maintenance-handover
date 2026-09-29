@@ -11,9 +11,16 @@ This repo holds **releases only**. The source is not public.
 
 ## How it works
 
-```
-existing project material → index → memory map → coverage and gaps → handover report
-                                 ↘ grounded chat (explore any step)
+```mermaid
+flowchart LR
+    A["Your material<br/>notes, PDF, DOCX, XLSX,<br/>PPTX, CSV, pasted text"] --> B["Index<br/>searchable, local"]
+    B --> C["Memory map<br/>typed entities, each claim<br/>with source + quote"]
+    C --> D["Coverage and gaps<br/>scored by code against<br/>a handover checklist"]
+    D --> E["Handover report<br/>every statement linked<br/>to its evidence"]
+    D -. "gap questions" .-> F(["Outgoing developer"])
+    F -. "answers, new notes" .-> A
+    B --> G["Grounded chat"]
+    C --> G
 ```
 
 **Chat is not the point.** It is one way to explore the material. What makes this a handover tool
@@ -44,6 +51,59 @@ Your vault contains:                       Memory map (linked notes, every claim
 The gaps are computed by code against a fixed checklist, not by the model, so the report shows
 what your material leaves out rather than what the model chose to mention. The outgoing
 developer answers the questions; the map and report update.
+
+<details>
+<summary><b>What happens inside the plugin</b> (indexing, map building, chat)</summary>
+
+Everything below runs inside Obsidian against one embedded SQLite file. There is no server and no
+second process. The only outside calls are to your chat and embedding endpoints.
+
+**1. Indexing.** Notes and imported documents become searchable chunks.
+
+```mermaid
+flowchart LR
+    N["Note saved in vault"] --> C["Split into chunks<br/>(title added to each)"]
+    S["Imported document<br/>PDF, DOCX, XLSX, PPTX, CSV"] --> T["Extract text"] --> C
+    C --> E["Embedding model<br/>(your server)"]
+    E --> DB[("SQLite<br/>text + vectors")]
+```
+
+Unchanged notes are never re-embedded. Imported documents live only in the database; the original
+file is not copied into your vault.
+
+**2. Building the memory map.** The model reads; code decides.
+
+```mermaid
+flowchart TD
+    A["Each note or document"] --> M["Chat model, one call per artifact<br/>proposes entities, relations, quotes"]
+    M --> K[("Checkpoint<br/>a failed build resumes")]
+    K --> V{"Code checks"}
+    V -->|"quote not found in source"| X["Rejected"]
+    V -->|"quote verified"| I["Merge duplicate names,<br/>pick newest value,<br/>flag conflicts"]
+    I --> MAP[("Memory map")]
+    MAP --> G["Coverage and gaps<br/>vs. handover checklist"]
+    MAP --> N["Linked notes in your vault"]
+    G --> R["Handover report<br/>no model call"]
+```
+
+Only the first step uses a model. Verification, merging, conflicts, coverage and the report are
+plain code, so the report shows what your material leaves out, not what the model chose to mention,
+and re-running them costs no model calls.
+
+**3. Answering in chat.**
+
+```mermaid
+flowchart TD
+    Q["Your question"] --> P["Plan: rewrite as standalone<br/>search queries"]
+    P --> H["Hybrid search<br/>meaning (vectors) + exact words,<br/>glossary terms expanded"]
+    P --> W["Memory-map lookup<br/>entities named in the question,<br/>plus their neighbours"]
+    H --> X["Context, newest first,<br/>secrets masked"]
+    W --> X
+    X --> L["Chat model<br/>answers only from context"]
+    L --> Y["Streamed answer<br/>with dated [n] citations"]
+```
+
+</details>
 
 ## What it does
 
