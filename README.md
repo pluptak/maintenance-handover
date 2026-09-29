@@ -7,8 +7,6 @@ is scattered across notes, documents, spreadsheets and their own head. It gather
 extracts an evidence-backed model of the system, shows what is still missing, and produces a
 handover the next maintainer can use.
 
-This repo holds **releases only**. The source is not public.
-
 ## How it works
 
 ```mermaid
@@ -23,9 +21,10 @@ flowchart LR
     C --> G
 ```
 
-**Chat is not the point.** It is one way to explore the material. What makes this a handover tool
-is the memory map and the coverage analysis: they turn a pile of notes into a model of the system
-and a list of what is still unknown, which a search box over your vault can't do.
+**Chat is a supporting interface, not the core of the product.** It lets you explore the
+collected material and ask questions of it. The handover itself comes from the memory map and the
+coverage analysis, which structure the material into a model of the system and identify what is
+still unknown. A search or chat interface over a vault does not do either.
 
 ### An example
 
@@ -50,7 +49,23 @@ Your vault contains:                       Memory map (linked notes, every claim
 
 The gaps are computed by code against a fixed checklist, not by the model, so the report shows
 what your material leaves out rather than what the model chose to mention. The outgoing
-developer answers the questions; the map and report update.
+developer answers the questions; after their answers are added as notes, rebuilding the map and
+report reflects them.
+
+### What you do, and what it costs
+
+- **Your part:** collect the project material in one vault (one vault per project), run the
+  build steps, and have the outgoing developer answer the gap questions in notes. The plugin
+  does not discover knowledge that nobody has written down. It shows where that knowledge is
+  missing.
+- **Time:** indexing embeds every note once, and the first *Memory map: Build* makes one model
+  call per note or document. On a local model this can take from minutes to much longer for a
+  large vault, depending on the model and hardware. Builds are checkpointed, so an interrupted
+  or failed build resumes where it stopped, and only new or edited material is processed on
+  later runs.
+- **Cost:** with a local model server there is no usage cost. With a hosted API, every note and
+  document is sent to it (see *Secrets and what the model sees*), so cost scales with the size of
+  the vault.
 
 <details>
 <summary><b>What happens inside the plugin</b> (indexing, map building, chat)</summary>
