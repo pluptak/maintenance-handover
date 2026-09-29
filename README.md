@@ -1,26 +1,67 @@
 # Maintenance Handover
 
-Test releases of an Obsidian plugin for **maintenance handovers**. It turns a vault of project notes
-and documents into a local knowledge base, maps what is known about the project, and shows what
-is missing before the new maintainer needs it.
+Test releases of an Obsidian plugin for **maintenance handovers**.
+
+Use it when someone who knows a software system is leaving, and the knowledge needed to maintain it
+is scattered across notes, documents, spreadsheets and their own head. It gathers that material,
+extracts an evidence-backed model of the system, shows what is still missing, and produces a
+handover the next maintainer can use.
 
 This repo holds **releases only**. The source is not public.
+
+## How it works
+
+```
+existing project material → index → memory map → coverage and gaps → handover report
+                                 ↘ grounded chat (explore any step)
+```
+
+**Chat is not the point.** It is one way to explore the material. What makes this a handover tool
+is the memory map and the coverage analysis: they turn a pile of notes into a model of the system
+and a list of what is still unknown, which a search box over your vault can't do.
+
+### An example
+
+```
+Your vault contains:                       Memory map (linked notes, every claim
+  deployment-notes.md                      cites its source and a verbatim quote):
+  architecture.pdf
+  incident-2025-03.docx                      Services      API · PostgreSQL · Import worker
+  customer-import.xlsx                       Environments  production · staging
+  runbook.md                                 People        Alice (database owner) · Bob (deploys)
+                                             Procedures    deploy API · restore database
+                     ↓
+              Coverage against the handover checklist     Handover report
+                                                          (built from the map, each statement
+  ✓ Architecture                                           linked to its evidence, with the gaps
+  ✓ Deployment                                             listed as questions to answer)
+  ✓ Production environment
+  ✗ Database recovery procedure    → "Who has restored production, and how?"
+  ✗ Third-party credentials        → "Where are they kept?"
+  ✗ Incident escalation            → "Who is called first, and when?"
+```
+
+The gaps are computed by code against a fixed checklist, not by the model, so the report shows
+what your material leaves out rather than what the model chose to mention. The outgoing
+developer answers the questions; the map and report update.
 
 ## What it does
 
 - **Artifacts in:** your notes, plus PDF, Word (DOCX), Excel (XLSX), PowerPoint (PPTX), CSV and
   text files, and pasted text about the project.
-- **Grounded chat:** a streamed assistant pane that answers from your material and cites every
-  source, dated, so conflicting notes resolve by recency.
 - **Memory map:** each artifact is classified into a typed map of the system (environments,
   services, people, procedures…). Every claim keeps its source and a verbatim quote, and the
   map is rendered as linked notes in your vault.
 - **Coverage and gaps:** the map is scored against a handover checklist by code. Each missing area
   becomes a gap with a question for the outgoing developer.
 - **Handover report:** a report built from the map, with each statement linked to its evidence.
+- **Grounded chat:** a streamed assistant pane that answers from your material and cites every
+  source, dated, so conflicting notes resolve by recency.
 
-**Everything stays on your machine.** The plugin's database lives in the vault's plugin folder,
-and the only network calls go to the model server you configure.
+**Your project data stays within the systems you configure.** The plugin has no cloud backend. Its
+database lives in the vault's plugin folder, and the only network calls go to the
+OpenAI-compatible chat and embedding endpoints you set up. Those endpoints receive your content,
+so use a local server for confidential material (see *Secrets and what the model sees*).
 
 ## Requirements
 
