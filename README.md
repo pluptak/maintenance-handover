@@ -139,7 +139,7 @@ file is not copied into your vault.
 
 ```mermaid
 flowchart TD
-    A["Each note or document"] --> M["Chat model, one call per artifact<br/>proposes entities, relations, quotes"]
+    A["Each note or document"] --> M["Chat model, one call per artifact (per part of a long one)<br/>proposes entities, relations, quotes"]
     M --> K[("Checkpoint<br/>a failed build resumes")]
     K --> V{"Code checks"}
     V -->|"quote not found in source"| X["Rejected"]
@@ -276,8 +276,6 @@ that folder are kept.
   saved values, never re-calculated. Excel cells formatted as dates come in as dates (2024-01-01)
   from version 0.2.11; earlier versions show them as numbers (such as 45292). Times of day and
   durations stay numbers.
-- The memory map skips any note or document over 20,000 characters (roughly ten pages). It stays
-  searchable in chat; split it to get it into the map.
 - Editing a note while the model is answering stops that answer.
 - This is a **test release**: expect rough edges, and keep a backup of any vault you care about.
   The plugin adds `on-*` fields (an id and a content hash) to your notes' frontmatter. Everything
