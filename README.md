@@ -272,8 +272,10 @@ that folder are kept.
 - A very large document briefly freezes the UI while it is read.
 - CSV and TXT files must be saved as UTF-8 (in Excel: Save As → "CSV UTF-8"); other encodings are
   refused with a message saying so.
-- Tables are cut to 2,000 rows and 64 columns per sheet or CSV. Excel dates come in as numbers
-  (such as 45292), not as dates yet.
+- Tables are cut to 2,000 rows and 64 columns per sheet or CSV. Excel formulas come in as their
+  saved values, never re-calculated. Excel cells formatted as dates come in as dates (2024-01-01)
+  from version 0.2.11; earlier versions show them as numbers (such as 45292). Times of day and
+  durations stay numbers.
 - The memory map skips any note or document over 20,000 characters (roughly ten pages). It stays
   searchable in chat; split it to get it into the map.
 - Editing a note while the model is answering stops that answer.
