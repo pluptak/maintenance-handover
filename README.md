@@ -139,7 +139,7 @@ file is not copied into your vault.
 
 ```mermaid
 flowchart TD
-    A["Each note or document"] --> M["Chat model, one call per artifact (per part of a long one)<br/>proposes entities, relations, quotes"]
+    A["Each note or document"] --> M["Chat model, one call per artifact (per part of a long one),<br/>then one more for its procedures<br/>proposes entities, relations, quotes"]
     M --> K[("Checkpoint<br/>a failed build resumes")]
     K --> V{"Code checks"}
     V -->|"quote not found in source"| X["Rejected"]
