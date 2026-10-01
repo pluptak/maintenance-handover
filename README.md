@@ -108,7 +108,8 @@ shape may find some slots irrelevant or missing, and the checklist is expected t
   does not discover knowledge that nobody has written down. It shows where that knowledge is
   missing.
 - **Time:** indexing embeds every note once, and the first *Memory map: Build* makes one model
-  call per note or document. On a local model this can take from minutes to much longer for a
+  call per note or document (a long one is read in parts), then one shorter call each for its
+  procedures. On a local model this can take from minutes to much longer for a
   large vault, depending on the model and hardware. Builds are checkpointed, so an interrupted
   or failed build resumes where it stopped, and only new or edited material is processed on
   later runs.
@@ -172,7 +173,8 @@ flowchart TD
 ## What it does
 
 - **Artifacts in:** your notes, plus PDF, Word (DOCX), Excel (XLSX), PowerPoint (PPTX), CSV and
-  text files, and pasted text about the project.
+  text files, and pasted text about the project. Headings, lists and tables survive the import,
+  so a table's rows keep their column headings.
 - **Memory map:** each artifact is classified into a typed map of the system (environments,
   services, people, procedures…). Every claim keeps its source and a verbatim quote, and the
   map is rendered as linked notes in your vault.
@@ -242,6 +244,9 @@ that folder are kept.
      or selected text with *Capture: Add selection as source*;
    - run *Memory map: Build*, then *Report: Handover (from memory map)*.
 
+   *Knowledge base: Help* lists every command, whether it calls the model, and has a **Run**
+   button for each. If a command has nothing to work from, it says what is missing.
+
 > Changed the embedding model? Run *Index: Rebuild (re-embed everything)*. Without it, existing
 > notes keep old vectors and silently drop out of search.
 
@@ -270,12 +275,17 @@ that folder are kept.
 - Desktop only.
 - Scanned (image-only) PDFs have no text layer, and there is no OCR.
 - A very large document briefly freezes the UI while it is read.
+- PDF headings are recognised by font size, so bold text in the body's size stays plain text, and
+  a page set in two columns is read across both. Excel headers split over two rows and
+  key–value blocks are not recognised as tables yet.
+- A long document is read in parts, so a relation whose two ends sit in different parts can be
+  missed.
 - CSV and TXT files must be saved as UTF-8 (in Excel: Save As → "CSV UTF-8"); other encodings are
   refused with a message saying so.
 - Tables are cut to 2,000 rows and 64 columns per sheet or CSV. Excel formulas come in as their
-  saved values, never re-calculated. Excel cells formatted as dates come in as dates (2024-01-01)
-  from version 0.2.11; earlier versions show them as numbers (such as 45292). Times of day and
-  durations stay numbers.
+  saved values, never re-calculated. Cells formatted as dates come in as dates (2024-01-01); times
+  of day and durations stay numbers. Sources added before 0.2.11 keep dates as numbers (such as
+  45292) until you remove and add them again.
 - Editing a note while the model is answering stops that answer.
 - This is a **test release**: expect rough edges, and keep a backup of any vault you care about.
   The plugin adds `on-*` fields (an id and a content hash) to your notes' frontmatter. Everything
