@@ -250,6 +250,9 @@ that folder are kept.
 > Changed the embedding model? Run *Index: Rebuild (re-embed everything)*. Without it, existing
 > notes keep old vectors and silently drop out of search.
 
+> Generated notes show their title twice? Each carries its own heading so it reads the same outside
+> Obsidian. Turn off *Settings → Appearance → Show inline title* to see it once.
+
 ## Secrets and what the model sees
 
 - **Your model server sees your content as written.** Indexing sends every note and source to the
