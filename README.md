@@ -55,8 +55,8 @@ Your vault contains:                       Memory map (linked notes, every claim
 
 The gaps are computed by code against a fixed checklist, not by the model, so the report shows
 what your material leaves out rather than what the model chose to mention. The outgoing
-developer answers the questions; after their answers are added as notes, rebuilding the map and
-report reflects them.
+developer answers the questions, in their own notes or in an interview the assistant runs one
+question at a time. Each answer is saved as a note, and rebuilding the map and report reflects it.
 
 ### Why retrieval, and why a memory map
 
@@ -95,6 +95,10 @@ Coverage is computed by code from the memory map, not judged by the model.
 4. **You can waive a gap.** If a slot does not apply, for instance because the client gives
    maintainers no access to live systems, you record it as not applicable, with a reason, in a
    decisions note. "No access" is then an answer rather than a gap.
+5. **Open details, per entity.** Besides the slots, the report lists details that a specific entity
+   in the map still lacks: who performs a procedure, what an environment is for, or whether a
+   planned change happened once its date has passed. These are listed as questions, are not
+   counted in coverage, and can be waived the same way.
 
 Because the rules read the map rather than the model's own summary, a missing topic shows up as a
 gap even when the model never mentioned it. The checklist is built for software your team develops
@@ -109,10 +113,10 @@ shape may find some slots irrelevant or missing, and the checklist is expected t
   missing.
 - **Time:** indexing embeds every note once, and the first *Memory map: Build* makes one model
   call per note or document (a long one is read in parts), then one shorter call each for its
-  procedures. On a local model this can take from minutes to much longer for a
+  procedures, and sometimes one more for missing tags. On a local model this can take from minutes to much longer for a
   large vault, depending on the model and hardware. Builds are checkpointed, so an interrupted
   or failed build resumes where it stopped, and only new or edited material is processed on
-  later runs.
+  later runs. *Memory map: Map this note* maps a single note on its own.
 - **Cost:** with a local model server there is no usage cost. With a hosted API, every note and
   document is sent to it (see *Secrets and what the model sees*), so cost scales with the size of
   the vault.
@@ -140,10 +144,11 @@ file is not copied into your vault.
 
 ```mermaid
 flowchart TD
-    A["Each note or document"] --> M["Chat model, one call per artifact (per part of a long one),<br/>then one more for its procedures<br/>proposes entities, relations, quotes"]
+    A["Each note or document"] --> M["Chat model, one call per artifact (per part of a long one),<br/>then one more for its procedures and, if needed, its tags<br/>proposes entities, relations, quotes"]
     M --> K[("Checkpoint<br/>a failed build resumes")]
     K --> V{"Code checks"}
     V -->|"quote not found in source"| X["Rejected"]
+    V -->|"subject not named"| Q["Held as a question<br/>until you confirm it"]
     V -->|"quote verified"| I["Merge duplicate names,<br/>pick newest value,<br/>flag conflicts"]
     I --> MAP[("Memory map")]
     MAP --> G["Coverage and gaps<br/>vs. handover checklist"]
@@ -178,8 +183,13 @@ flowchart TD
 - **Memory map:** each artifact is classified into a typed map of the system (environments,
   services, people, procedures…). Every claim keeps its source and a verbatim quote, and the
   map is rendered as linked notes in your vault.
+- **Questions instead of guesses:** when a note doesn't say which thing it is about ("moved it to
+  the new VM", "Priya's new number"), its claim is held out of the map and asked as a question.
+  You answer it in a dialog: for this note only, always for this project (a glossary term), or
+  dismiss it.
 - **Coverage and gaps:** the map is scored against a handover checklist by code. Each missing area
-  becomes a gap with a question for the outgoing developer.
+  becomes a gap with a question for the outgoing developer. *Assistant: Interview me on open gaps*
+  asks them one at a time and saves each answer as a note.
 - **Handover report:** a report built from the map, with each statement linked to its evidence.
 - **Grounded chat:** a streamed assistant pane that answers from your material and cites every
   source, dated, so conflicting notes resolve by recency.
@@ -242,7 +252,9 @@ that folder are kept.
    - open the assistant from the ribbon and ask about your project;
    - add a document with *Capture: Add document source* (PDF, DOCX, XLSX, PPTX, CSV or TXT),
      or selected text with *Capture: Add selection as source*;
-   - run *Memory map: Build*, then *Report: Handover (from memory map)*.
+   - run *Memory map: Build*, then *Report: Handover (from memory map)*;
+   - answer what the map asks: *Memory map: Review open questions*, then *Assistant: Interview me
+     on open gaps*.
 
    *Knowledge base: Help* lists every command, whether it calls the model, and has a **Run**
    button for each. If a command has nothing to work from, it says what is missing.
@@ -291,8 +303,11 @@ that folder are kept.
   45292) until you remove and add them again.
 - Editing a note while the model is answering stops that answer.
 - This is a **test release**: expect rough edges, and keep a backup of any vault you care about.
-  The plugin adds `on-*` fields (an id and a content hash) to your notes' frontmatter. Everything
-  else it writes goes into its own generated notes.
+  The plugin adds `on-*` fields (an id and a content hash) to your notes' frontmatter, hidden in
+  the note's Properties (*File properties* and Source mode still show them). Beyond that it writes
+  into a note of yours only when you click to: a dated *Context added* block at the end of a note
+  when you answer a question for that note, and one line in the glossary or decisions note when you
+  settle a suggestion or question there. Everything else goes into its own generated notes.
 
 ## Reporting problems
 
