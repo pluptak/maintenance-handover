@@ -301,7 +301,8 @@ that folder are kept.
   saved values, never re-calculated. Cells formatted as dates come in as dates (2024-01-01); times
   of day and durations stay numbers. Sources added before 0.2.11 keep dates as numbers (such as
   45292) until you remove and add them again.
-- Editing a note while the model is answering stops that answer.
+- On a server that keeps one model loaded (LM Studio's *Only Keep Last JIT Loaded Model*), saving a note
+  while the model is answering stops that answer. Load both models and it doesn't.
 - This is a **test release**: expect rough edges, and keep a backup of any vault you care about.
   The plugin adds `on-*` fields (an id and a content hash) to your notes' frontmatter, hidden in
   the note's Properties (*File properties* and Source mode still show them). Beyond that it writes
