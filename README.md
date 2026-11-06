@@ -190,9 +190,12 @@ flowchart TD
 - **Coverage and gaps:** the map is scored against a handover checklist by code. Each missing area
   becomes a gap with a question for the outgoing developer. *Assistant: Interview me on open gaps*
   asks them one at a time and saves each answer as a note.
+- **Conflicts you can settle:** when two sources disagree on a fact, the newest is shown as current
+  and the conflict is flagged. *Memory map: Resolve conflicts* lets you decide which value holds, with
+  your reason; the other value stays in its source, shown as not kept.
 - **Handover report:** a report built from the map, with each statement linked to its evidence.
 - **Grounded chat:** a streamed assistant pane that answers from your material and cites every
-  source, dated, so conflicting notes resolve by recency.
+  source, dated, so conflicting notes resolve by recency, unless you have decided otherwise.
 
 **Your project data stays within the systems you configure.** The plugin has no cloud backend. Its
 database lives in the vault's plugin folder, and the only network calls go to the
@@ -254,7 +257,7 @@ that folder are kept.
      or selected text with *Capture: Add selection as source*;
    - run *Memory map: Build*, then *Report: Handover (from memory map)*;
    - answer what the map asks: *Memory map: Review open questions*, then *Assistant: Interview me
-     on open gaps*.
+     on open gaps*, and settle what your sources disagree on with *Memory map: Resolve conflicts*.
 
    *Knowledge base: Help* lists every command, whether it calls the model, and has a **Run**
    button for each. If a command has nothing to work from, it says what is missing.
