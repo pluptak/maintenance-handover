@@ -171,7 +171,11 @@ flowchart TD
     W --> X
     X --> L["Chat model<br/>answers only from context"]
     L --> Y["Streamed answer<br/>with dated [n] citations"]
+    P -. "unclear which thing you mean,<br/>cut off, or nothing on file" .-> C(["Asks you one question first"])
 ```
+
+This is the default *Plan-driven* chat driver. With *Tool-calling* (an advanced setting), the chat
+model runs the searches and map lookups itself, which needs a model that calls tools reliably.
 
 </details>
 
@@ -189,13 +193,16 @@ flowchart TD
   dismiss it.
 - **Coverage and gaps:** the map is scored against a handover checklist by code. Each missing area
   becomes a gap with a question for the outgoing developer. *Assistant: Interview me on open gaps*
-  asks them one at a time and saves each answer as a note.
+  asks them one at a time and saves each answer as a note. *Assistant: Interview me on this note*
+  does the same for what one mapped note leaves open.
 - **Conflicts you can settle:** when two sources disagree on a fact, the newest is shown as current
   and the conflict is flagged. *Memory map: Resolve conflicts* lets you decide which value holds, with
   your reason; the other value stays in its source, shown as not kept.
 - **Handover report:** a report built from the map, with each statement linked to its evidence.
 - **Grounded chat:** a streamed assistant pane that answers from your material and cites every
-  source, dated, so conflicting notes resolve by recency, unless you have decided otherwise.
+  source, dated, so conflicting notes resolve by recency, unless you have decided otherwise. Each
+  reference says what it rests on (map, decision, glossary, saved answer or artifact). Chat asks
+  when it can't tell what you mean, and a conversation can be exported as a note.
 
 **Your project data stays within the systems you configure.** The plugin has no cloud backend. Its
 database lives in the vault's plugin folder, and the only network calls go to the
@@ -279,7 +286,8 @@ that folder are kept.
   That covers `password: …` and `token=…` assignments, passwords stated in a sentence
   ("the password is now X"), AWS keys, JWTs, bearer tokens, private-key blocks and the password in
   a `scheme://user:pass@host` address. Chat also masks the retrieved text before the model sees it.
-  What you type into chat is sent as you wrote it.
+  What you type into chat is sent as you wrote it, and an exported conversation keeps your questions
+  as you typed them.
 - **Redaction is a safety net, not a guarantee.** It's deliberately narrow so it doesn't mangle
   ordinary text, so a secret with no label and no known shape gets through. Keep credentials in a
   password manager and write down only where they are, such as a KeePass entry path. The plugin
@@ -305,7 +313,10 @@ that folder are kept.
   of day and durations stay numbers. Sources added before 0.2.11 keep dates as numbers (such as
   45292) until you remove and add them again.
 - On a server that keeps one model loaded (LM Studio's *Only Keep Last JIT Loaded Model*), saving a note
-  while the model is answering stops that answer. Load both models and it doesn't.
+  while the model is answering stops that answer, and the pane says it was cut off. Load both models
+  and it doesn't.
+- Chat may not always follow a conflict you have settled: a model can still prefer the newer value.
+  The report and the map's notes always follow your decision.
 - This is a **test release**: expect rough edges, and keep a backup of any vault you care about.
   The plugin adds `on-*` fields (an id and a content hash) to your notes' frontmatter, hidden in
   the note's Properties (*File properties* and Source mode still show them). Beyond that it writes
