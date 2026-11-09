@@ -187,6 +187,10 @@ model runs the searches and map lookups itself, which needs a model that calls t
 - **Memory map:** each artifact is classified into a typed map of the system (environments,
   services, people, procedures…). Every claim keeps its source and a verbatim quote, and the
   map is rendered as linked notes in your vault.
+- **Known tools:** notes often name a product without saying what it is ("Grafana: <address>"). The
+  project's glossary note starts with a list of well-known tools and what each is for, so a note that
+  only names Grafana still counts as documenting monitoring. The list is yours: add your own products,
+  delete what is wrong, and nothing outside the note is applied.
 - **Questions instead of guesses:** when a note doesn't say which thing it is about ("moved it to
   the new VM", "Priya's new number"), its claim is held out of the map and asked as a question.
   You answer it in a dialog: for this note only, always for this project (a glossary term), or
@@ -254,8 +258,9 @@ that folder are kept.
    - Chat model and embedding model: ids **your server actually serves**, as it lists them.
    - API key: leave empty for a local server.
 2. **Set up the vault.** Run *Knowledge base: Set up this vault* from the command palette. It
-   explains what it changes, then creates the vault's notebook and indexes your notes with the
-   embedding model, which is why the server comes first. Use one vault per project.
+   explains what it changes, then creates the vault's notebook, adds a *Glossary* note if the vault has
+   none, and indexes your notes with the embedding model, which is why the server comes first. Use one
+   vault per project.
 3. **Run *Diagnostics: Health check*.** Every row should be green or explain itself. This is
    the first thing to include in a bug report.
 4. **Try it:**
@@ -322,7 +327,8 @@ that folder are kept.
   the note's Properties (*File properties* and Source mode still show them). Beyond that it writes
   into a note of yours only when you click to: a dated *Context added* block at the end of a note
   when you answer a question for that note, and one line in the glossary or decisions note when you
-  settle a suggestion or question there. Everything else goes into its own generated notes.
+  settle a suggestion or question there. Setting up adds one note for you to own, the *Glossary*, unless
+  the vault already has one. Everything else goes into its own generated notes.
 
 ## Reporting problems
 
