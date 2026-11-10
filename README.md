@@ -184,6 +184,10 @@ model runs the searches and map lookups itself, which needs a model that calls t
 - **Artifacts in:** your notes, plus PDF, Word (DOCX), Excel (XLSX), PowerPoint (PPTX), CSV and
   text files, and pasted text about the project. Headings, lists and tables survive the import,
   so a table's rows keep their column headings.
+- **A guide through the handover:** the assistant pane shows the eight steps of a handover (set up,
+  connect the models, gather, index, map, settle, fill the gaps, read the report), where your vault
+  stands and the next step, and what each button costs. *Knowledge base: What next?* opens it. In an
+  empty vault, **Start from questions** begins with the interview.
 - **Memory map:** each artifact is classified into a typed map of the system (environments,
   services, people, procedures…). Every claim keeps its source and a verbatim quote, and the
   map is rendered as linked notes in your vault.
@@ -197,8 +201,9 @@ model runs the searches and map lookups itself, which needs a model that calls t
   dismiss it.
 - **Coverage and gaps:** the map is scored against a handover checklist by code. Each missing area
   becomes a gap with a question for the outgoing developer. *Assistant: Interview me on open gaps*
-  asks them one at a time and saves each answer as a note. *Assistant: Interview me on this note*
-  does the same for what one mapped note leaves open.
+  asks them one at a time and saves each answer as a note, and the guide's **Ask** interviews one
+  handover area alone. *Assistant: Interview me on this note* does the same for what one mapped note
+  leaves open.
 - **Conflicts you can settle:** when two sources disagree on a fact, the newest is shown as current
   and the conflict is flagged. *Memory map: Resolve conflicts* lets you decide which value holds, with
   your reason; the other value stays in its source, shown as not kept.
@@ -207,6 +212,10 @@ model runs the searches and map lookups itself, which needs a model that calls t
   source, dated, so conflicting notes resolve by recency, unless you have decided otherwise. Each
   reference says what it rests on (map, decision, glossary, saved answer or artifact). Chat asks
   when it can't tell what you mean, and a conversation can be exported as a note.
+- **Behind the scenes:** a view that draws, step by step and with a plain-language caption, how an
+  answer is found, how the map is built and what indexing does. It is made for showing someone how the
+  plugin works: it replays any answer without calling the model, and records a run to play back where
+  no model is running. A recording holds titles and names, never passage text.
 
 **Your project data stays within the systems you configure.** The plugin has no cloud backend. Its
 database lives in the vault's plugin folder, and the only network calls go to the
@@ -260,11 +269,13 @@ that folder are kept.
 2. **Set up the vault.** Run *Knowledge base: Set up this vault* from the command palette. It
    explains what it changes, then creates the vault's notebook, adds a *Glossary* note if the vault has
    none, and indexes your notes with the embedding model, which is why the server comes first. Use one
-   vault per project.
+   vault per project. If no embedding model is chosen yet, it first says what that leaves undone
+   (notes found by keyword only, or not indexed at all) and lets you set up anyway.
 3. **Run *Diagnostics: Health check*.** Every row should be green or explain itself. This is
    the first thing to include in a bug report.
 4. **Try it:**
-   - open the assistant from the ribbon and ask about your project;
+   - open the assistant from the ribbon: its guide shows where the handover stands and the next
+     step, and you can ask about your project;
    - add a document with *Capture: Add document source* (PDF, DOCX, XLSX, PPTX, CSV or TXT),
      or selected text with *Capture: Add selection as source*;
    - run *Memory map: Build*, then *Report: Handover (from memory map)*;
@@ -322,6 +333,16 @@ that folder are kept.
   and it doesn't.
 - Chat may not always follow a conflict you have settled: a model can still prefer the newer value.
   The report and the map's notes always follow your decision.
+- A glossary made by an earlier version has no Known tools. Add a `## Known tools` section by hand, with
+  lines like `monitoring: Grafana, Seq` (kinds: `monitoring`, `source-control`, `remote-access`,
+  `documentation`, `product`, `service-desk`, `other`). Known tools has been tried on one small model
+  and one synthetic project so far.
+- Chat can't yet find a tool by what it is for: "Which monitoring tools do we use?" can come back with
+  nothing found, where "What is Grafana used for here?" answers. Ask by name.
+- Behind the scenes draws an answer stored before it existed with less detail, and a Tool-calling
+  answer without a memory-map walk.
+- Names and announcements for keyboards and screen readers have been checked as the browser computes
+  them, not with a screen reader.
 - This is a **test release**: expect rough edges, and keep a backup of any vault you care about.
   The plugin adds `on-*` fields (an id and a content hash) to your notes' frontmatter, hidden in
   the note's Properties (*File properties* and Source mode still show them). Beyond that it writes
