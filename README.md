@@ -205,8 +205,8 @@ model runs the searches and map lookups itself, which needs a model that calls t
   handover area alone. *Assistant: Interview me on this note* does the same for what one mapped note
   leaves open.
 - **Conflicts you can settle:** when two sources disagree on a fact, the newest is shown as current
-  and the conflict is flagged. *Memory map: Resolve conflicts* lets you decide which value holds, with
-  your reason; the other value stays in its source, shown as not kept.
+  and the conflict is flagged. *Memory map: Resolve conflicts* lets you decide which value holds, or that
+  both do, or neither, with your reason; a value not kept stays in its source.
 - **Handover report:** a report built from the map, with each statement linked to its evidence.
 - **Grounded chat:** a streamed assistant pane that answers from your material and cites every
   source, dated, so conflicting notes resolve by recency, unless you have decided otherwise. Each
@@ -331,8 +331,9 @@ that folder are kept.
 - On a server that keeps one model loaded (LM Studio's *Only Keep Last JIT Loaded Model*), saving a note
   while the model is answering stops that answer, and the pane says it was cut off. Load both models
   and it doesn't.
-- Chat may not always follow a conflict you have settled: a model can still prefer the newer value.
-  The report and the map's notes always follow your decision.
+- Chat may not always follow a conflict you have settled: a model can still prefer the newer value,
+  and after *Neither holds* it may still mention the values you rejected as past ones. The report and
+  the map's notes always follow your decision.
 - A glossary made by an earlier version has no Known tools. Add a `## Known tools` section by hand, with
   lines like `monitoring: Grafana, Seq` (kinds: `monitoring`, `source-control`, `remote-access`,
   `documentation`, `product`, `service-desk`, `other`). Known tools has been tried on one small model
