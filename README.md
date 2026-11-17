@@ -201,8 +201,10 @@ model runs the searches and map lookups itself, which needs a model that calls t
   dismiss it.
 - **Coverage and gaps:** the map is scored against a handover checklist by code. Each missing area
   becomes a gap with a question for the outgoing developer. *Assistant: Interview me on open gaps*
-  asks them one at a time and saves each answer as a note, and the guide's **Ask** interviews one
-  handover area alone. *Assistant: Interview me on this note* does the same for what one mapped note
+  asks them one at a time and saves each answer as a note; **Save and check** maps the answer at once
+  and asks again, saying what is still missing, if it didn't close the gap. A question that applies to
+  several things (each database's backup) is asked once for all of them. The guide's **Ask** interviews
+  one handover area alone. *Assistant: Interview me on this note* does the same for what one mapped note
   leaves open.
 - **Conflicts you can settle:** when two sources disagree on a fact, the newest is shown as current
   and the conflict is flagged. *Memory map: Resolve conflicts* lets you decide which value holds, or that
@@ -288,6 +290,10 @@ that folder are kept.
 > Changed the embedding model? Run *Index: Rebuild (re-embed everything)*. Without it, existing
 > notes keep old vectors and silently drop out of search.
 
+> Generated notes (the map, the reports, source stubs) open in Reading view, because the plugin
+> rewrites them on the next build and an edit there would be lost. Editing one shows where the
+> correction belongs: a note of your own, a glossary line or the decisions note.
+
 > Generated notes show their title twice? Each carries its own heading so it reads the same outside
 > Obsidian. Turn off *Settings → Appearance → Show inline title* to see it once.
 
@@ -304,6 +310,11 @@ that folder are kept.
   a `scheme://user:pass@host` address. Chat also masks the retrieved text before the model sees it.
   What you type into chat is sent as you wrote it, and an exported conversation keeps your questions
   as you typed them.
+- **Your material is not instructions.** Chat marks every passage it sends the model as material to
+  cite, and withholds a paragraph that addresses "AI assistants" or tells the reader to send their
+  password somewhere; the answer says the source holds one. This works by wording, so a paragraph
+  that steers the model in other words can still get through, and it does not yet cover the memory
+  map.
 - **Redaction is a safety net, not a guarantee.** It's deliberately narrow so it doesn't mangle
   ordinary text, so a secret with no label and no known shape gets through. Keep credentials in a
   password manager and write down only where they are, such as a KeePass entry path. The plugin
@@ -328,9 +339,9 @@ that folder are kept.
   saved values, never re-calculated. Cells formatted as dates come in as dates (2024-01-01); times
   of day and durations stay numbers. Sources added before 0.2.11 keep dates as numbers (such as
   45292) until you remove and add them again.
-- On a server that keeps one model loaded (LM Studio's *Only Keep Last JIT Loaded Model*), saving a note
-  while the model is answering stops that answer, and the pane says it was cut off. Load both models
-  and it doesn't.
+- On a server that keeps one model loaded (LM Studio's *Only Keep Last JIT Loaded Model*), a manual
+  *Sync now* or a map build while the model is answering stops that answer, and the pane says it was cut
+  off. A saved note waits for the answer. Load both models and it doesn't happen.
 - Chat may not always follow a conflict you have settled: a model can still prefer the newer value,
   and after *Neither holds* it may still mention the values you rejected as past ones. The report and
   the map's notes always follow your decision.
@@ -338,8 +349,6 @@ that folder are kept.
   lines like `monitoring: Grafana, Seq` (kinds: `monitoring`, `source-control`, `remote-access`,
   `documentation`, `product`, `service-desk`, `other`). Known tools has been tried on one small model
   and one synthetic project so far.
-- Chat can't yet find a tool by what it is for: "Which monitoring tools do we use?" can come back with
-  nothing found, where "What is Grafana used for here?" answers. Ask by name.
 - Behind the scenes draws an answer stored before it existed with less detail, and a Tool-calling
   answer without a memory-map walk.
 - Names and announcements for keyboards and screen readers have been checked as the browser computes
@@ -348,8 +357,8 @@ that folder are kept.
   The plugin adds `on-*` fields (an id and a content hash) to your notes' frontmatter, hidden in
   the note's Properties (*File properties* and Source mode still show them). Beyond that it writes
   into a note of yours only when you click to: a dated *Context added* block at the end of a note
-  when you answer a question for that note, and one line in the glossary or decisions note when you
-  settle a suggestion or question there. Setting up adds one note for you to own, the *Glossary*, unless
+  when you answer a question for that note, a line in the glossary or decisions note when you
+  settle a suggestion or question there, and the glossary lines you add from a terminology answer. Setting up adds one note for you to own, the *Glossary*, unless
   the vault already has one. Everything else goes into its own generated notes.
 
 ## Reporting problems
