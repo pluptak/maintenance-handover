@@ -105,6 +105,10 @@ gap even when the model never mentioned it. The checklist is built for software 
 and the client hosts, so it asks "us or the client?" in several places. Projects with a different
 shape may find some slots irrelevant or missing, and the checklist is expected to evolve.
 
+The whole method is written out for a person in the [handover manual](handover-manual.md): what to
+inventory, the 38 topics with their rules and questions, the details each item needs, conflicts and
+not-applicable. It needs no plugin or model, only the project's documents and a spreadsheet.
+
 ### What you do, and what it costs
 
 - **Your part:** collect the project material in one vault (one vault per project), run the
@@ -114,7 +118,9 @@ shape may find some slots irrelevant or missing, and the checklist is expected t
 - **Time:** indexing embeds every note once, and the first *Memory map: Build* makes one model
   call per note or document (a long one is read in parts), then one shorter call each for its
   procedures, and sometimes one more for missing tags. On a local model this can take from minutes to much longer for a
-  large vault, depending on the model and hardware. Builds are checkpointed, so an interrupted
+  large vault, depending on the model and hardware. Model thinking is off for map building by default:
+  in our tests it took about half the time with the same coverage (*Settings → Model thinking*; an
+  install from an earlier version keeps its setting). Builds are checkpointed, so an interrupted
   or failed build resumes where it stopped, and only new or edited material is processed on
   later runs. *Memory map: Map this note* maps a single note on its own.
 - **Cost:** with a local model server there is no usage cost. With a hosted API, every note and
@@ -203,7 +209,8 @@ model runs the searches and map lookups itself, which needs a model that calls t
   becomes a gap with a question for the outgoing developer. *Assistant: Interview me on open gaps*
   asks them one at a time and saves each answer as a note; **Save and check** maps the answer at once
   and asks again, saying what is still missing, if it didn't close the gap. A question that applies to
-  several things (each database's backup) is asked once for all of them. The guide's **Ask** interviews
+  several things (each database's backup) is asked once for all of them, and a question about every
+  environment (how a maintainer connects) names them, so the answer is recorded for each. The guide's **Ask** interviews
   one handover area alone. *Assistant: Interview me on this note* does the same for what one mapped note
   leaves open.
 - **Conflicts you can settle:** when two sources disagree on a fact, the newest is shown as current
@@ -312,9 +319,9 @@ that folder are kept.
   as you typed them.
 - **Your material is not instructions.** Chat marks every passage it sends the model as material to
   cite, and withholds a paragraph that addresses "AI assistants" or tells the reader to send their
-  password somewhere; the answer says the source holds one. This works by wording, so a paragraph
-  that steers the model in other words can still get through, and it does not yet cover the memory
-  map.
+  password somewhere; the answer says the source holds one. The memory map leaves such a paragraph
+  out too, and the build's Notice and the *Memory map: Status* note say where. This works by wording,
+  so a paragraph that steers the model in other words can still get through.
 - **Redaction is a safety net, not a guarantee.** It's deliberately narrow so it doesn't mangle
   ordinary text, so a secret with no label and no known shape gets through. Keep credentials in a
   password manager and write down only where they are, such as a KeePass entry path. The plugin
