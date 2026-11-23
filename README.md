@@ -288,7 +288,7 @@ that folder are kept.
    - add a document with *Capture: Add document source* (PDF, DOCX, XLSX, PPTX, CSV or TXT),
      or selected text with *Capture: Add selection as source*;
    - run *Memory map: Build*, then *Report: Handover (from memory map)*;
-   - answer what the map asks: *Memory map: Review open questions*, then *Assistant: Interview me
+   - answer what the map asks: *Memory map: Review claims to confirm*, then *Assistant: Interview me
      on open gaps*, and settle what your sources disagree on with *Memory map: Resolve conflicts*.
 
    *Knowledge base: Help* lists every command, whether it calls the model, and has a **Run**
