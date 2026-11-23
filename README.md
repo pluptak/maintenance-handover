@@ -92,12 +92,16 @@ Coverage is computed by code from the memory map, not judged by the model.
 3. **Coverage is the share of scored slots covered.** Every uncovered slot becomes a gap that
    states the question to ask, for example "Who has restored production, and how?". Gaps carry
    a high, medium or low priority, which orders the list but does not change the percentage.
+   The report calls this **evidence coverage**: a covered topic is documented, not checked. What is
+   written may be thin, out of date or wrong, and a topic the checklist doesn't list can't show up
+   as a gap.
 4. **You can waive a gap.** If a slot does not apply, for instance because the client gives
    maintainers no access to live systems, you record it as not applicable, with a reason, in a
    decisions note. "No access" is then an answer rather than a gap.
 5. **Open details, per entity.** Besides the slots, the report lists details that a specific entity
-   in the map still lacks: who performs a procedure, what an environment is for, or whether a
-   planned change happened once its date has passed. These are listed as questions, are not
+   in the map still lacks: who performs a procedure, what an environment is for, whether a
+   planned change happened once its date has passed, or whether contact details or an environment's
+   address last stated over two years ago still hold. These are listed as questions, are not
    counted in coverage, and can be waived the same way.
 
 Because the rules read the map rather than the model's own summary, a missing topic shows up as a
@@ -117,12 +121,15 @@ not-applicable. It needs no plugin or model, only the project's documents and a 
   missing.
 - **Time:** indexing embeds every note once, and the first *Memory map: Build* makes one model
   call per note or document (a long one is read in parts), then one shorter call each for its
-  procedures, and sometimes one more for missing tags. On a local model this can take from minutes to much longer for a
+  procedures, and sometimes one more for missing tags. The procedures call runs beside the next
+  document's first one, which saves time on a server that answers two requests at once. On a local model this can take from minutes to much longer for a
   large vault, depending on the model and hardware. Model thinking is off for map building by default:
   in our tests it took about half the time with the same coverage (*Settings → Model thinking*; an
   install from an earlier version keeps its setting). Builds are checkpointed, so an interrupted
   or failed build resumes where it stopped, and only new or edited material is processed on
-  later runs. *Memory map: Map this note* maps a single note on its own.
+  later runs. *Memory map: Map this note* maps a single note on its own, and *Map a note when it
+  settles* (an advanced setting, off by default) maps a saved note once the vault has been left
+  alone for three minutes.
 - **Cost:** with a local model server there is no usage cost. With a hosted API, every note and
   document is sent to it (see *Secrets and what the model sees*), so cost scales with the size of
   the vault.
@@ -193,18 +200,20 @@ model runs the searches and map lookups itself, which needs a model that calls t
 - **A guide through the handover:** the assistant pane shows the eight steps of a handover (set up,
   connect the models, gather, index, map, settle, fill the gaps, read the report), where your vault
   stands and the next step, and what each button costs. *Knowledge base: What next?* opens it. In an
-  empty vault, **Start from questions** begins with the interview.
+  empty vault, **Start from questions** begins with the interview, by role (developer, operations,
+  product owner), by area or with every question, and can record who answered.
 - **Memory map:** each artifact is classified into a typed map of the system (environments,
   services, people, procedures…). Every claim keeps its source and a verbatim quote, and the
   map is rendered as linked notes in your vault.
 - **Known tools:** notes often name a product without saying what it is ("Grafana: <address>"). The
   project's glossary note starts with a list of well-known tools and what each is for, so a note that
   only names Grafana still counts as documenting monitoring. The list is yours: add your own products,
-  delete what is wrong, and nothing outside the note is applied.
+  delete what is wrong, and nothing outside the note is applied. *Glossary: Review suggestions* offers
+  the well-known tools your glossary doesn't list.
 - **Questions instead of guesses:** when a note doesn't say which thing it is about ("moved it to
   the new VM", "Priya's new number"), its claim is held out of the map and asked as a question.
-  You answer it in a dialog: for this note only, always for this project (a glossary term), or
-  dismiss it.
+  You answer it in a dialog, during the build or after it: for this note only, always for this
+  project (a glossary term, which settles every question it answers), or dismiss it.
 - **Coverage and gaps:** the map is scored against a handover checklist by code. Each missing area
   becomes a gap with a question for the outgoing developer. *Assistant: Interview me on open gaps*
   asks them one at a time and saves each answer as a note; **Save and check** maps the answer at once
@@ -215,7 +224,9 @@ model runs the searches and map lookups itself, which needs a model that calls t
   leaves open.
 - **Conflicts you can settle:** when two sources disagree on a fact, the newest is shown as current
   and the conflict is flagged. *Memory map: Resolve conflicts* lets you decide which value holds, or that
-  both do, or neither, with your reason; a value not kept stays in its source.
+  both do, or neither, with your reason; a value not kept stays in its source. When each value is
+  half right, **Merge** takes the statement that holds and keeps that. Until a conflict is settled, the
+  report marks its value *disputed* and chat is told the sources disagree.
 - **Handover report:** a report built from the map, with each statement linked to its evidence.
 - **Grounded chat:** a streamed assistant pane that answers from your material and cites every
   source, dated, so conflicting notes resolve by recency, unless you have decided otherwise. Each
@@ -352,9 +363,10 @@ that folder are kept.
 - Chat may not always follow a conflict you have settled: a model can still prefer the newer value,
   and after *Neither holds* it may still mention the values you rejected as past ones. The report and
   the map's notes always follow your decision.
-- A glossary made by an earlier version has no Known tools. Add a `## Known tools` section by hand, with
-  lines like `monitoring: Grafana, Seq` (kinds: `monitoring`, `source-control`, `remote-access`,
-  `documentation`, `product`, `service-desk`, `other`). Known tools has been tried on one small model
+- A glossary made before Known tools existed has none until you add them: *Glossary: Review suggestions*
+  offers the lines, or write them by hand under `## Known tools`, like `monitoring: Grafana, Seq` (kinds:
+  `monitoring`, `source-control`, `remote-access`, `documentation`, `product`, `service-desk`, `other`).
+  Known tools has been tried on one small model
   and one synthetic project so far.
 - Behind the scenes draws an answer stored before it existed with less detail, and a Tool-calling
   answer without a memory-map walk.
@@ -365,7 +377,8 @@ that folder are kept.
   the note's Properties (*File properties* and Source mode still show them). Beyond that it writes
   into a note of yours only when you click to: a dated *Context added* block at the end of a note
   when you answer a question for that note, a line in the glossary or decisions note when you
-  settle a suggestion or question there, and the glossary lines you add from a terminology answer. Setting up adds one note for you to own, the *Glossary*, unless
+  settle a suggestion, question or conflict there, the glossary lines you add from a terminology answer,
+  and a further answer to an interview question, added to the note that holds the first one. Setting up adds one note for you to own, the *Glossary*, unless
   the vault already has one. Everything else goes into its own generated notes.
 
 ## Reporting problems
