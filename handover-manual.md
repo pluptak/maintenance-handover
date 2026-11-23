@@ -261,8 +261,13 @@ gaps and are not part of the coverage figure.
 | Procedure | who performs it | Who performs {name}: us or the client? |
 | Tool | where it is and how to get access | Where is {name}, and how does a maintainer get access? |
 | Contact | role, relationship and how to reach them | What is {name}'s role, and how do we reach them? |
+| Contact | if it has contact details, ones stated within the last two years | {name}'s contact details ({reach}) were last stated over two years ago. Are they still current? |
+| Environment | if it has an address, one stated within the last two years | {name}'s address ({address}) was last stated over two years ago. Is it still current? |
 | SLA | where it is defined | Where is the {name} SLA defined: the contract, or the ticketing system? |
 | Planned change with a date | a date that has not passed | {name} was planned for {when}. Did it happen, and if it moved, when is it due now? |
+
+The two-year rows ask about a value stated only once. A newer document that repeats it, a different
+value (a conflict) or a person's decision closes them.
 
 ## When documents disagree
 
