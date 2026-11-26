@@ -157,16 +157,16 @@ coverage figure.
 
 | Topic | Priority | Covered when | Question for a gap |
 |---|---|---|---|
-| Common use cases | high | a procedure of kind *operation* exists | What does routine maintenance involve (log checks, restarts, batch reruns, certificate renewals), how often, and what are the steps? |
-| Login process | high | a component authenticates via something, or a *login* procedure exists | How do users log in: which identity provider, and which roles or accounts do they need? |
-| Installation & deployment | high | an *installation* or *deployment* procedure exists | How is the product installed or updated on the client's infrastructure, step by step, and who carries it out: us or the client's operations team? |
-| Architecture & tech stack | high | a component has its technology recorded | Which languages, frameworks and runtime versions does each component use, and where is that pinned? |
-| Component responsibilities | high | at least one component is in the inventory | What are the project's components, and what is each one responsible for? |
-| Integrations | high | at least one integration | Which external systems does the product exchange data with, which of them are the client's, and who owns each? |
-| Databases | high | at least one datastore | Which databases or other datastores does the project use, and what does each one hold? |
-| Schemas | high | at least one schema | Where are the database schemas defined, and how are schema migrations created and applied? |
-| Backup & restore | high | a *backup-restore* procedure exists | Which datastores are backed up, how often, where do backups live, who owns them, who runs them (us or the client), and how is a restore performed and tested? |
-| Project terminology | medium | the glossary has at least one entry | Which names, abbreviations or codenames do the client and the team use that a new maintainer wouldn't know (environment names, job names, internal product names)? |
+| Common use cases | high | a procedure of kind *operation* exists | What routine maintenance does the system need? Say how often each task is done and what the steps are. Examples: checking logs, restarting a service, rerunning a batch job, renewing a certificate. |
+| Login process | high | a component authenticates via something, or a *login* procedure exists | How do users log in to the application? Say which system checks their identity (for example Okta or Active Directory), and which roles or accounts they need. |
+| Installation & deployment | high | an *installation* or *deployment* procedure exists | How is the application installed and updated on the client's infrastructure? Describe the steps, and say who does it: us or the client's operations team. |
+| Architecture & tech stack | high | a component has its technology recorded | Which programming languages, frameworks and versions does each part of the system use? Say where the versions are set. |
+| Component responsibilities | high | at least one component is in the inventory | What are the main parts of the system, and what does each one do? |
+| Integrations | high | at least one integration | Which other systems does the application exchange data with? Say which of them belong to the client, and who is responsible for each one. |
+| Databases | high | at least one datastore | Which databases or other data stores does the project use, and what does each one store? |
+| Schemas | high | at least one schema | Where are the database schemas defined? Say how schema changes (migrations) are created and applied. |
+| Backup & restore | high | a *backup-restore* procedure exists | How are the databases backed up, and how is a backup restored? Say which databases are backed up, how often, where the backups are kept, who is responsible for them (us or the client), and how a restore is tested. |
+| Project terminology | medium | the glossary has at least one entry | Which names, abbreviations or code names would a new maintainer not understand? Examples: environment names, job names, the client's internal product names. |
 
 *Purpose* (what the product is for) is written when the material states it, and is not scored.
 
@@ -174,9 +174,9 @@ coverage figure.
 
 | Topic | Priority | Covered when | Question for a gap |
 |---|---|---|---|
-| Access prerequisites | high | an *access-prerequisite* procedure exists | What must a maintainer complete before the client grants access (security training, NDA, named accounts, client-issued hardware), and how long does it take? |
-| Access requirements | high | any item has its access recorded, or anything authenticates via something | Which accounts and permissions does a maintainer need: client network/VPN, remote desktop, application roles, repositories? |
-| Access request procedures | high | an *access-request* procedure exists | How is each access requested, which requests go through the client, and who approves them? |
+| Access prerequisites | high | an *access-prerequisite* procedure exists | What must a maintainer do before the client gives them access? Say how long it takes. Examples: security training, a signed NDA, a personal account, a laptop from the client. |
+| Access requirements | high | any item has its access recorded, or anything authenticates via something | Which accounts and permissions does a maintainer need? Examples: the client's network or VPN, remote desktop, roles in the application, code repositories. |
+| Access request procedures | high | an *access-request* procedure exists | How does a maintainer request each kind of access, and who approves it? Say which requests go through the client. |
 
 *Credential references* and the *access checklist* are filled in by a person and are not scored.
 
@@ -184,21 +184,21 @@ coverage figure.
 
 | Topic | Priority | Covered when | Question for a gap |
 |---|---|---|---|
-| Environments & hosting | high | an environment has its purpose recorded | Which environments exist, where is each hosted (the client's datacenter, cloud, ours), and what is each for? |
-| Environment addresses | high | an environment has an address | What are the addresses (URLs or hosts) of each environment? |
-| Connection method | high | an environment has its access recorded | How does a maintainer connect to each environment (VPN, bastion, portal), and what do they need first? |
-| Bug reproduction | medium | an environment of kind *development* or *test* exists | Is there an environment close to production, with all third-party dependencies, reserved for developers to reproduce bugs? If not, where are bugs reproduced? |
-| Dependency limits | medium | an environment has its limitations recorded | Which third-party dependencies are missing or stubbed on each environment, and what can't be tested there as a result? |
-| Environment recreation | high | a *recreation* procedure exists | How is an environment recreated from nothing, who does it (us or the client), and how much effort does it take? |
+| Environments & hosting | high | an environment has its purpose recorded | Which environments exist, and what is each one used for? Say where each one is hosted: in the client's data center, in the cloud, or with us. |
+| Environment addresses | high | an environment has an address | What is the address (URL or host name) of each environment? |
+| Connection method | high | an environment has its access recorded | How does a maintainer connect to each environment? Say what they need first. Examples: VPN, jump host, web portal. |
+| Bug reproduction | medium | an environment of kind *development* or *test* exists | Where can developers reproduce a bug from production? Say whether there is an environment like production, with all the external systems connected, that developers can use for this. |
+| Dependency limits | medium | an environment has its limitations recorded | Which external systems are missing or simulated in each environment? Say what can't be tested there because of that. |
+| Environment recreation | high | a *recreation* procedure exists | If an environment were lost, how would you rebuild it? Say who would do it (us or the client), and how much work it is. |
 
 ### 4. Development and operation
 
 | Topic | Priority | Covered when | Question for a gap |
 |---|---|---|---|
-| Developer setup | high | a *developer-setup* procedure exists | What does a developer need installed and configured to build and run the project locally? |
-| Account creation | high | an *account-creation* procedure exists | How are application accounts created, and who can create them: an admin, a customer contact? |
-| Roles & permissions | high | a component has its roles recorded | Which application roles exist, and which features does each one unlock? |
-| Non-intuitive behaviour | medium | any item has a caveat recorded | What behaves in a non-obvious way when operating the application: hidden prerequisites, features that need extra setup, things that look broken but aren't? |
+| Developer setup | high | a *developer-setup* procedure exists | What does a developer need to install and set up to build and run the project on their own computer? |
+| Account creation | high | an *account-creation* procedure exists | How is a new user account created in the application? Say who can create one, for example an administrator or a contact at the client. |
+| Roles & permissions | high | a component has its roles recorded | Which user roles does the application have, and what can each role do? |
+| Non-intuitive behaviour | medium | any item has a caveat recorded | Does anything in the application work in an unexpected way? Examples: hidden requirements, features that need extra setup, things that look broken but are not. |
 
 ### 5. Tools
 
@@ -206,11 +206,11 @@ List every tool with its kind and purpose, then check:
 
 | Topic | Priority | Covered when | Question for a gap |
 |---|---|---|---|
-| Monitoring & logging | high | a *monitoring* tool exists | Which tools log, monitor and alert on the product (Elastic, Grafana), and can we see them or only the client? |
-| Source control & CI/CD | high | a *source-control* tool exists | Where does the code live (Azure DevOps, GitHub), which pipelines build and release it, and who controls access? |
-| Remote access | high | a *remote-access* tool exists, or an environment is reached through one (a VPN, jump host, remote desktop, Citrix) | Which tools reach the client's systems (Citrix, RDP, jump host)? |
-| Requirements & documentation | high | a *documentation* tool exists | Where does the customer document business logic and requirements (wiki, Word files, email), and which source wins when they disagree? |
-| Product tooling | medium | a *product* tool exists | Which admin CLIs, management UIs or scripts ship with the product, and what is each one for? |
+| Monitoring & logging | high | a *monitoring* tool exists | Which tools do you use for logs, monitoring and alerts? Say whether we can use them, or only the client. Examples: Elastic, Grafana. |
+| Source control & CI/CD | high | a *source-control* tool exists | Where is the source code kept, and what builds and releases it? Say who controls the access. Examples: Azure DevOps, GitHub, a build pipeline. |
+| Remote access | high | a *remote-access* tool exists, or an environment is reached through one (a VPN, jump host, remote desktop, Citrix) | Which tools do you use to connect to the client's systems? Examples: Citrix, remote desktop (RDP), a jump host. |
+| Requirements & documentation | high | a *documentation* tool exists | Where does the client keep the requirements and business rules? Say which source is right when two of them disagree. Examples: a wiki, Word files, emails. |
+| Product tooling | medium | a *product* tool exists | Which administration tools or scripts come with the product, and what is each one for? Examples: command-line tools, administration pages. |
 
 ### 6. Contacts
 
@@ -218,26 +218,26 @@ List every contact by relationship, with role and how to reach them, then check:
 
 | Topic | Priority | Covered when | Question for a gap |
 |---|---|---|---|
-| Customer contacts | high | a *customer* contact exists | Who are the client-side contacts (product owner, testers, key users), and what does each one decide or handle? |
-| Service desks | high | a *service-desk* contact exists | Which service desk handles what (access requests, infrastructure incidents), and how is it reached? |
-| Previous developers | medium | a *previous-developer* contact exists | Who has worked on the product before, and what do they know best? |
-| Internal contacts | low | an *internal* contact exists | Who internally should a maintainer ask about this project, and about what? |
-| Communication channels | high | at least one communication channel | Which channels (chat, mailing lists, meetings) are used for this project, and what goes where? |
+| Customer contacts | high | a *customer* contact exists | Who are the contacts on the client's side, and what is each one responsible for? Examples: product owner, testers, key users. |
+| Service desks | high | a *service-desk* contact exists | Which service desks are there, and what does each one help with? Say how to contact each one. Examples: access requests, infrastructure problems. |
+| Previous developers | medium | a *previous-developer* contact exists | Who worked on the product before, and what does each person know best? |
+| Internal contacts | low | an *internal* contact exists | Who in our own company can help with this project, and with what? |
+| Communication channels | high | at least one communication channel | Which channels does the project use to communicate, and what is each one for? Examples: chat, mailing lists, regular meetings. |
 
 ### 7. SLA coverage
 
 | Topic | Priority | Covered when | Question for a gap |
 |---|---|---|---|
-| Ticket lifecycle | high | a *ticket-lifecycle* procedure exists | Where do tickets come in (our desk, the client's system, email), and how are they triaged, assigned and closed? If the client has its own ticket system, how do tickets move between theirs and ours? |
-| Response times | high | at least one SLA | What response and resolution times apply to each priority, during which support hours, and where is that defined (contract, ticketing system)? |
-| Escalation path | high | something escalates to someone | When a ticket is critical or about to breach, who is it escalated to, and in what order, on our side and the client's? |
-| Common cases | medium | at least one failure mode | Which issues come up most often, and how is each one usually resolved? |
+| Ticket lifecycle | high | a *ticket-lifecycle* procedure exists | Where do tickets arrive, and what happens to a ticket until it is closed? Say who sorts and assigns the tickets. If the client has its own ticket system, say how tickets move between their system and ours. |
+| Response times | high | at least one SLA | How quickly must we respond to a ticket and solve it, for each priority? Say what the support hours are, and where this is written (the contract, the ticket system). |
+| Escalation path | high | something escalates to someone | Who do we contact when a ticket is critical or close to its deadline? Say in which order, on our side and on the client's side. |
+| Common cases | medium | at least one failure mode | Which problems happen most often, and how is each one usually solved? |
 
 ### 8. Long-term plans
 
 | Topic | Priority | Covered when | Question for a gap |
 |---|---|---|---|
-| Planned changes | medium | at least one planned change | Are any changes planned (framework upgrades, migrations, the client's development plans), when are they due, and who drives them? |
+| Planned changes | medium | at least one planned change | Are any changes planned? Say when they are due and who is responsible. Examples: framework upgrades, migrations, the client's own plans. |
 
 *Opportunities and pain points* are listed when the material has them, and are not scored.
 
@@ -251,20 +251,20 @@ gaps and are not part of the coverage figure.
 | For each | It needs | Otherwise ask |
 |---|---|---|
 | Datastore | a procedure it requires (its backup) | How is {name} backed up and restored, and who does it? |
-| Integration | an owner, someone it escalates to, or a support contact | Who do we contact when {name} fails, a person, a team or a support URL? |
-| Procedure of kind *operation* | a frequency or a trigger | How often is {name} done, or what triggers it? |
-| Item with access recorded (other than "none") | an approver, or the procedure for requesting it | How is access to {name} requested, and who approves it? |
+| Integration | an owner, someone it escalates to, or a support contact | Who do we contact if {name} stops working: a person, a team or a support page? |
+| Procedure of kind *operation* | a frequency or a trigger | How often is {name} done? If there is no schedule, what starts it? |
+| Item with access recorded (other than "none") | an approver, or the procedure for requesting it | How do you request access to {name}, and who approves it? |
 | Environment | an address | What is the address of {name}? |
-| Environment | how to connect; if "none", preferably who acts for us | How does a maintainer connect to {name}, or, if they can't, who acts on it for them? |
+| Environment | how to connect; if "none", preferably who acts for us | How does a maintainer connect to {name}? If that is not possible, who does the work there instead? |
 | Environment | a purpose | What is {name} used for, and where is it hosted? |
-| Environment | a monitoring tool, or where its logs are | Where are {name}'s logs, or who provides them? |
-| Procedure | who performs it | Who performs {name}: us or the client? |
-| Tool | where it is and how to get access | Where is {name}, and how does a maintainer get access? |
-| Contact | role, relationship and how to reach them | What is {name}'s role, and how do we reach them? |
-| Contact | if it has contact details, ones stated within the last two years | {name}'s contact details ({reach}) were last stated over two years ago. Are they still current? |
-| Environment | if it has an address, one stated within the last two years | {name}'s address ({address}) was last stated over two years ago. Is it still current? |
-| SLA | where it is defined | Where is the {name} SLA defined: the contract, or the ticketing system? |
-| Planned change with a date | a date that has not passed | {name} was planned for {when}. Did it happen, and if it moved, when is it due now? |
+| Environment | a monitoring tool, or where its logs are | Where can we find the logs of {name}, or who can send them to us? |
+| Procedure | who performs it | Who does this task: {name}? Is it us or the client? |
+| Tool | where it is and how to get access | Where can we find {name}, and how does a maintainer get access to it? |
+| Contact | role, relationship and how to reach them | What is the role of {name}, and how do we contact them? |
+| Contact | if it has contact details, ones stated within the last two years | The contact details of {name} ({reach}) were written down more than two years ago. Are they still correct? |
+| Environment | if it has an address, one stated within the last two years | The address of {name} ({address}) was written down more than two years ago. Is it still correct? |
+| SLA | where it is defined | Where is the {name} SLA written: in the contract, or in the ticket system? |
+| Planned change with a date | a date that has not passed | {name} was planned for {when}. Did it happen? If it was moved, what is the new date? |
 
 The two-year rows ask about a value stated only once. A newer document that repeats it, a different
 value (a conflict) or a person's decision closes them.
