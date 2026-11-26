@@ -213,7 +213,9 @@ model runs the searches and map lookups itself, which needs a model that calls t
 - **Questions instead of guesses:** when a note doesn't say which thing it is about ("moved it to
   the new VM", "Priya's new number"), its claim is held out of the map and asked as a question.
   You answer it in a dialog, during the build or after it: for this note only, always for this
-  project (a glossary term, which settles every question it answers), or dismiss it.
+  project (a glossary term, which settles every question it answers), or dismiss it. An interview
+  answer you check is asked about in the conversation instead, as a read-back to confirm or correct:
+  *I understood that "Teams channel Harbor Support" is a communication channel. Is that right?*
 - **Coverage and gaps:** the map is scored against a handover checklist by code. Each missing area
   becomes a gap with a question for the outgoing developer. *Assistant: Interview me on open gaps*
   asks them one at a time and saves each answer as a note; **Save and check** maps the answer at once
