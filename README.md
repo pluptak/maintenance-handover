@@ -361,7 +361,7 @@ that folder are kept.
   *Sync now* or a map build while the model is answering stops that answer, and the pane says it was cut
   off. A saved note waits for the answer. Load both models and it doesn't happen.
 - Chat may not always follow a conflict you have settled: a model can still prefer the newer value,
-  and after *Neither holds* it may still mention the values you rejected as past ones. The report and
+  and after *None is right* it may still mention the values you rejected as past ones. The report and
   the map's notes always follow your decision.
 - A glossary made before Known tools existed has none until you add them: *Glossary: Review suggestions*
   offers the lines, or write them by hand under `## Known tools`, like `monitoring: Grafana, Seq` (kinds:
